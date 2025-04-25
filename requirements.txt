@@ -1,5 +1,6 @@
 streamlit
 pymongo[srv]
+dnspython
 pandas
 matplotlib
 python-dotenv

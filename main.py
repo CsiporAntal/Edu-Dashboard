@@ -14,7 +14,7 @@ if not MONGO_URI:
     st.error("❌ MONGO_URI is not set. Please configure it in Streamlit Secrets!")
     st.stop()
 
-client = MongoClient(MONGO_URI, tls=True)  # 👈 ADD tls=True here
+client = MongoClient(MONGO_URI)
 db = client["edu_dashboard"]
 
 # Page config

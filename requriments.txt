@@ -1,0 +1,5 @@
+streamlit
+pymongo[srv]
+pandas
+matplotlib
+python-dotenv

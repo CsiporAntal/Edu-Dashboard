@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from pymongo import MongoClient
 
 # MongoDB connection
-# client = MongoClient("mongodb://localhost:27017")
+# 27017
 
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)

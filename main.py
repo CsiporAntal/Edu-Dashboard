@@ -9,8 +9,12 @@ from pymongo import MongoClient
 # 27017
 
 MONGO_URI = os.getenv("MONGO_URI")
-client = MongoClient(MONGO_URI)
 
+if not MONGO_URI:
+    st.error("❌ MONGO_URI is not set. Please configure it in Streamlit Secrets!")
+    st.stop()
+
+client = MongoClient(MONGO_URI, tls=True)  # 👈 ADD tls=True here
 db = client["edu_dashboard"]
 
 # Page config

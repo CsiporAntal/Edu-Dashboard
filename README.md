@@ -97,7 +97,7 @@ Deploy to Streamlit Cloud:
 
 | Dashboard Example | School Comparison | Nationality Comparison |
 |:---:|:---:|:---:|
-| ![Dashboard](images/all datas.png) | ![Compare Finals](images/compare finals.png) | ![Nationality](images/compare by nationalitys.png) |
+| ![Dashboard](images/dashboard.png) | ![Compare Finals](images/compare_finals.png) | ![Nationality](images/compare_nationalitys.png) |
 
 
 # 📧 Contact

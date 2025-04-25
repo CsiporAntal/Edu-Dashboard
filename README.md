@@ -3,6 +3,10 @@ An interactive Education Dashboard built with Streamlit and powered by MongoDB A
 
 Visualize, explore, and compare student exam results from different years, counties, and nationalities!
 
+🔗 Check it out here:
+
+👉 https://csiporantal-edu-dashboard-main-yy0zwe.streamlit.app
+
 # 🚀 Features
 📊 Compare top 10 schools across two different Finals years
 

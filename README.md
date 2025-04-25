@@ -40,7 +40,7 @@ Clone the project:
 
 ```bash
 
-git clone https://github.com/<your-username>/edu-dashboard.git
+git clone https://github.com/CsiporAntal/edu-dashboard.git
 cd edu-dashboard
 ```
 

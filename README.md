@@ -30,8 +30,8 @@ Visualize, explore, and compare student exam results from different years, count
 - MongoDB Atlas (Remote cloud database)
 
 - Pymongo
-
-## ⚡ Quickstart Guide
+  
+# ⚡ Quickstart Guide
 Clone the project:
 
 ```bash
@@ -75,7 +75,7 @@ Deploy to Streamlit Cloud:
 
 - Deploy and enjoy! 🚀
 
-📂 Project Structure
+# 📂 Project Structure
 ```bash
 
 /edu-dashboard
@@ -86,18 +86,21 @@ Deploy to Streamlit Cloud:
 ├── README.md
 └── .gitignore
 ```
-📝 Notes
+# 📝 Notes
 - MongoDB Atlas is required (no local MongoDB)
 
 - Make sure your Atlas cluster has your IP whitelisted (or 0.0.0.0/0 for public access)
 
 - Handle your database URI securely using Streamlit Secrets!
 
-✨ Screenshots
+# ✨ Screenshots
 
-Dashboard Example	School Comparison	Nationality Comparison
-(Add your screenshots if you want!)
+| Dashboard Example | School Comparison | Nationality Comparison |
+|:---:|:---:|:---:|
+| ![Dashboard](images/all datas.png) | ![Compare Finals](images/compare finals.png) | ![Nationality](images/compare by nationalitys.png) |
 
-📧 Contact
-Feel free to contact me if you have questions or ideas!
-→ Csipor Antal
+
+# 📧 Contact
+Feel free to contact me if you have questions or ideas! 
+
+**→ Csipor Antal**

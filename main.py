@@ -1,25 +1,37 @@
 import os
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 
-# MongoDB connection
-# 27017
+# MongoDB connections
+MONGO_URI_NEW = os.getenv("MONGO_URI_NEW")  # Cluster with finals 2022, 2023, grades 2019, 2020, 2021, 2022, 2024
+MONGO_URI_OLD = os.getenv("MONGO_URI_OLD")  # Cluster with finals 2019, 2020, 2021
 
-MONGO_URI = os.getenv("MONGO_URI")
-
-if not MONGO_URI:
-    st.error("❌ MONGO_URI is not set. Please configure it in Streamlit Secrets!")
+if not MONGO_URI_NEW or not MONGO_URI_OLD:
+    st.error("❌ MongoDB URIs are not set. Please configure MONGO_URI_NEW and MONGO_URI_OLD in Streamlit Secrets!")
     st.stop()
 
-client = MongoClient(MONGO_URI)
-db = client["edu_dashboard"]
+client_new = MongoClient(MONGO_URI_NEW)
+client_old = MongoClient(MONGO_URI_OLD)
+
+db_new = client_new["edu_dashboard"]
+db_old = client_old["edu_dashboard_old"]
+
+# Finals years split
+old_final_years = ["2019", "2020", "2021"]
+new_final_years = ["2022", "2023"]
+
+# Helper to decide database
+def get_db_for_year(year):
+    if year in old_final_years:
+        return db_old
+    else:
+        return db_new
 
 # Page config
 st.set_page_config(page_title="Education Dashboard", layout="wide")
-# st.title("📈 Education Dashboard (MongoDB + Streamlit)")
+st.title("📈 Education Dashboard (MongoDB + Streamlit)")
 
 # Sidebar - Select dataset type and year
 st.sidebar.header("📁 Dataset Selection")
@@ -39,18 +51,25 @@ year_options = {
     "grades": ["2019", "2020", "2021", "2022", "2024"],
     "finals": ["2019", "2020", "2021", "2022", "2023"]
 }
+# Helper to decide database
+def get_db_for_collection(collection_type, year):
+    if collection_type == "finals" and year in ["2019", "2020", "2021"]:
+        return db_old
+    else:
+        return db_new
 
-# Only show Year select if not comparing finals
-if not compare_finals:
-    collection_year = st.sidebar.selectbox("Year", year_options[collection_type])
-    collection_name = f"{collection_type}_{collection_year}"
-    collection = db[collection_name]
 
 # Finals years dropdowns for comparison
 finals_year_1, finals_year_2 = None, None
 if compare_finals:
     finals_year_1 = st.sidebar.selectbox("Finals Year 1", year_options["finals"], index=4, key="year1")
     finals_year_2 = st.sidebar.selectbox("Finals Year 2", year_options["finals"], index=3, key="year2")
+else:
+    collection_year = st.sidebar.selectbox("Year", year_options[collection_type])
+    collection_name = f"{collection_type}_{collection_year}"
+    selected_db = get_db_for_collection(collection_type, collection_year)
+
+    collection = selected_db[collection_name]
 
 # Sidebar - Search
 search_text = st.sidebar.text_input("Search by School or Code")
@@ -81,12 +100,20 @@ def top_schools_pipeline():
         {"$limit": 10}
     ]
 
+
+
 # ---- Comparison Mode: Finals Year vs Year ----
 if compare_finals and finals_year_1 and finals_year_2:
     st.subheader(f"📊 Top 10 Schools: Finals {finals_year_1} vs {finals_year_2}")
 
-    df1 = pd.DataFrame(clean_data(list(db[f"finals_{finals_year_1}"].aggregate(top_schools_pipeline())))).rename(columns={"avgScore": f"avgScore_{finals_year_1}"})
-    df2 = pd.DataFrame(clean_data(list(db[f"finals_{finals_year_2}"].aggregate(top_schools_pipeline())))).rename(columns={"avgScore": f"avgScore_{finals_year_2}"})
+    db1 = get_db_for_collection("finals", finals_year_1)
+    db2 = get_db_for_collection("finals", finals_year_2)
+
+    collection1 = db1[f"finals_{finals_year_1}"]
+    collection2 = db2[f"finals_{finals_year_2}"]
+
+    df1 = pd.DataFrame(clean_data(list(collection1.aggregate(top_schools_pipeline())))).rename(columns={"avgScore": f"avgScore_{finals_year_1}"})
+    df2 = pd.DataFrame(clean_data(list(collection2.aggregate(top_schools_pipeline())))).rename(columns={"avgScore": f"avgScore_{finals_year_2}"})
 
     merged = pd.merge(df1, df2, on="_id", how="inner").sort_values(by=f"avgScore_{finals_year_1}", ascending=False)
     st.dataframe(merged)
@@ -104,8 +131,9 @@ if compare_finals and finals_year_1 and finals_year_2:
 
 # ---- Comparison by Nationality ----
 elif compare_nationality:
-    st.subheader("🌍 Average Score by Nationality")
+    st.subheader(f"🌍 Average Score by Nationality")
 
+    pipeline = []
     if collection_type == "grades":
         pipeline = [
             {"$group": {
